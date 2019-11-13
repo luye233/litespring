@@ -10,7 +10,7 @@ import org.litespring.util.StringUtils;
 /**
  * Implementation of {@link AspectInstanceFactory} that locates the aspect from the
  * {@link org.springframework.beans.factory.BeanFactory} using a configured bean name.
- *
+ *	这里的注释都讲解好了，就是借助一个bean name去获取BeanFactory中的aspect（方法）
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
@@ -32,6 +32,7 @@ public class AspectInstanceFactory implements BeanFactoryAware{
 		}
 	}
 
+	// 获取方法
 	public Object getAspectInstance() throws Exception {
 		return this.beanFactory.getBean(this.aspectBeanName);
 	}

@@ -8,6 +8,9 @@ import org.litespring.beans.factory.BeanFactoryAware;
 import org.litespring.beans.factory.FactoryBean;
 import org.litespring.util.StringUtils;
 
+/**
+ * 找到targetBeanName的methodName方法，然后将找到的Method结果保存到Method中去
+ */
 public class MethodLocatingFactory  implements FactoryBean<Method>,BeanFactoryAware{
 	
 	private String targetBeanName;
@@ -24,7 +27,9 @@ public class MethodLocatingFactory  implements FactoryBean<Method>,BeanFactoryAw
 		this.methodName = methodName;
 	}
 
-	
+
+	// setBeanFacory的时候，把Method对象也设置好。
+	// 利用Beanfact找到targetBeanName代表的Class对象，然后借助BeanUtils来resolve出Method（也有methodName）
 	public void setBeanFactory(BeanFactory beanFactory) {
 		if (!StringUtils.hasText(this.targetBeanName)) {
 			throw new IllegalArgumentException("Property 'targetBeanName' is required");
@@ -38,7 +43,7 @@ public class MethodLocatingFactory  implements FactoryBean<Method>,BeanFactoryAw
 			throw new IllegalArgumentException("Can't determine type of bean with name '" + this.targetBeanName + "'");
 		}
 		
-		
+
 		this.method = BeanUtils.resolveSignature(this.methodName, beanClass);
 
 		if (this.method == null) {

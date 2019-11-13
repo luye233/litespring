@@ -26,7 +26,7 @@ public abstract class AbstractAspectJAdvice implements Advice{
 	
 	
 	public void invokeAdviceMethod() throws  Throwable{
-	
+		// 调用一个方法需要实例对象和Method对象，这里就是增加了getAdviceInstance，用于获取执行AdviceMethod的实例对象
 		adviceMethod.invoke(adviceObjectFactory.getAspectInstance());
 	}
 	public Pointcut getPointcut(){
