@@ -22,13 +22,16 @@ public class BeanDefinitionTestV5 extends AbstractV5Test{
 		
 		DefaultBeanFactory factory = (DefaultBeanFactory)this.getBeanFactory("petstore-v5.xml");
 		
-		
+		// 	<!-- 非业务类对象 -->
+		//	<bean id="tx" class="org.litespring.tx.TransactionManager" />
 		//检查名称为tx的Bean定义是否生成
 		{
 			BeanDefinition bd = factory.getBeanDefinition("tx");
 			Assert.assertTrue(bd.getBeanClassName().equals(TransactionManager.class.getName()));
 		}
-		
+
+		// <!-- pointcut定义筛选的规则 -->
+		//	<aop:pointcut id="placeOrder" expression="execution(* org.litespring.service.v5.*.placeOrder(..))" />
 		//检查placeOrder是否正确生成
 		{
 			BeanDefinition bd = factory.getBeanDefinition("placeOrder");
@@ -43,8 +46,9 @@ public class BeanDefinitionTestV5 extends AbstractV5Test{
 			
 		}
 		
-		
-		//检查AspectJBeforeAdvice
+		// <!-- 拦截器 -->
+		// <aop:before pointcut-ref="placeOrder" method="start" />
+		// 检查AspectJBeforeAdvice
 		{
 			String name = AspectJBeforeAdvice.class.getName() + "#0";
 			BeanDefinition bd = factory.getBeanDefinition(name);

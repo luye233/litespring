@@ -12,15 +12,16 @@
 		base-package="org.litespring.service.v5,org.litespring.dao.v5">
 	</context:component-scan>
 
+	<!-- 非业务类对象 -->
 	<bean id="tx" class="org.litespring.tx.TransactionManager" />
 	
 	<aop:config>
-		
+		<!-- 代表这里需要引用“tx”作为aspect（方法） -->
 		<aop:aspect ref="tx">
-
+			<!-- pointcut定义筛选的规则 -->
 			<aop:pointcut id="placeOrder"
 				expression="execution(* org.litespring.service.v5.*.placeOrder(..))" />
-			
+			<!-- 拦截器 -->
 			<aop:before pointcut-ref="placeOrder" method="start" />
 			<aop:after-returning pointcut-ref="placeOrder"	method="commit" />	
 			<aop:after-throwing pointcut-ref="placeOrder" method = "rollback"/>
