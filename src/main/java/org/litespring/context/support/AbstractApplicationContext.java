@@ -40,6 +40,11 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     public ClassLoader getBeanClassLoader() {
 		return (this.beanClassLoader != null ? this.beanClassLoader : ClassUtils.getDefaultClassLoader());
 	}
+
+	/**
+	 * 这里注册了一系列的BeanPostProcessor，包括创建代理类的AspectJAutoProxyCreator
+	 * @param beanFactory
+	 */
     protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory) {
     	{
 			AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();

@@ -24,13 +24,20 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
 		return bean;
 	}
 
+	/**
+	 * 对bean进行增强，得到增强了的代理类对象
+	 * @param bean
+	 * @param beanName
+	 * @return
+	 * @throws BeansException
+	 */
 	public Object afterInitialization(Object bean, String beanName) throws BeansException {
 		
 		//如果这个Bean本身就是Advice及其子类，那就不要再生成动态代理了。
 		if(isInfrastructureClass(bean.getClass())){
 			return bean;
 		}
-		
+		// 从factory遍历全部Advice，看有没有Advice要拦截该bean
 		List<Advice> advices = getCandidateAdvices(bean);
 		if(advices.isEmpty()){
 			return bean;
@@ -38,12 +45,18 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
 		
 		return createProxy(advices,bean);
 	}
-	
+
+	/**
+	 * 筛选出会拦截目标bean的Advice
+	 * @param bean
+	 * @return
+	 */
 	private List<Advice> getCandidateAdvices(Object bean){
 		
 		List<Object> advices = this.beanFactory.getBeansByType(Advice.class);
 		
 		List<Advice> result = new ArrayList<Advice>();
+		// 拿到全部Advice，一个个判断有没有要拦截，有的话，就把这个拦截器加入到结果集中
 		for(Object o : advices){			
 			Pointcut pc = ((Advice) o).getPointcut();
 			if(canApply(pc,bean.getClass())){
@@ -53,10 +66,16 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
 		}
 		return result;
 	}
-	
+
+	/**
+	 * 创建代理对象
+	 * 这里的代码跟前面的测试代码相似，没有好好看
+	 * @param advices 拦截器列表
+	 * @param bean 要执行的业务类（目标类）
+	 * @return
+	 */
 	protected Object createProxy( List<Advice> advices ,Object bean) {
-		
-		
+
 		AopConfigSupport config = new AopConfigSupport();
 		for(Advice advice : advices){
 			config.addAdvice(advice);
@@ -70,6 +89,7 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
 		config.setTargetObject(bean);		
 		
 		AopProxyFactory proxyFactory = null;
+		// 如果该类没有实现任何接口，使用cglib创建动态代理
 		if(config.getProxiedInterfaces().length == 0){
 			proxyFactory =  new CglibProxyFactory(config);
 		} else{
@@ -93,10 +113,14 @@ public class AspectJAutoProxyCreator implements BeanPostProcessor {
 		this.beanFactory = beanFactory;
 		
 	}
-	
-	public static boolean canApply(Pointcut pc, Class<?> targetClass) {
-		
 
+	/**
+	 * 使用pointcut中的接口来判断某个类有没有方法要拦截
+	 * @param pc
+	 * @param targetClass
+	 * @return
+	 */
+	public static boolean canApply(Pointcut pc, Class<?> targetClass) {
 		MethodMatcher methodMatcher = pc.getMethodMatcher();	
 
 		Set<Class> classes = new LinkedHashSet<Class>(ClassUtils.getAllInterfacesForClassAsSet(targetClass));

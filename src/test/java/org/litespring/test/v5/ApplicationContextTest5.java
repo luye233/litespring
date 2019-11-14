@@ -18,7 +18,7 @@ public class ApplicationContextTest5 {
 	}
 	@Test
 	public void testPlaceOrder() {
-		
+		// 很简洁的利用ApplicationContext来得到对象
 		ApplicationContext ctx = new ClassPathXmlApplicationContext("petstore-v5.xml");
 		PetStoreService petStore = (PetStoreService)ctx.getBean("petStore");
 		

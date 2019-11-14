@@ -20,7 +20,7 @@ public class BeanFactoryTestV5  extends AbstractV5Test{
 	public void testGetBeanByType() throws Exception{
 		
 		BeanFactory factory = super.getBeanFactory("petstore-v5.xml");
-		
+		// 从BeanFactory中拿到Advice相关的类
 		List<Object> advices = factory.getBeansByType(Advice.class);
 		
 		Assert.assertEquals(3, advices.size());

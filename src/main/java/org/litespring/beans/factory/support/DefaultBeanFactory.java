@@ -46,15 +46,28 @@ public class DefaultBeanFactory  extends AbstractBeanFactory
 			
 		return this.beanDefinitionMap.get(beanID);
 	}
+
+	/**
+	 * 为从BeanFactory中拿到与type相关的Bean
+	 * @param type
+	 * @return
+	 */
 	public List<Object> getBeansByType(Class<?> type){
 		List<Object> result = new ArrayList<Object>();
+		// 拿到beanId
 		List<String> beanIDs = this.getBeanIDsByType(type);
 		for(String beanID : beanIDs){
+			// get方法对Bean进行创建
 			result.add(this.getBean(beanID));
 		}
 		return result;		
 	}
-	
+
+	/**
+	 * 遍历全部的BeanDefinition，如果其中的beanClass是type类型，就加到结果集中
+	 * @param type
+	 * @return
+	 */
 	private List<String> getBeanIDsByType(Class<?> type){
 		List<String> result = new ArrayList<String>();
 		for(String beanName :this.beanDefinitionMap.keySet()){
@@ -100,7 +113,14 @@ public class DefaultBeanFactory  extends AbstractBeanFactory
 		return bean;		
 		
 	}
+
+	/**
+	 * 创建实例的方法有修改，
+	 * @param bd
+	 * @return
+	 */
 	private Object instantiateBean(BeanDefinition bd) {
+		// 对于AspectBeforeAdvice，会按照Constructor来创建实例
 		if(bd.hasConstructorArgumentValues()){
 			ConstructorResolver resolver = new ConstructorResolver(this);
 			return resolver.autowireConstructor(bd);
@@ -161,6 +181,14 @@ public class DefaultBeanFactory  extends AbstractBeanFactory
 		}
 		return bean;
 	}
+
+	/**
+	 * 对于非合成的bean，需要BeanPostProcessor创建代理对象
+	 * @param existingBean
+	 * @param beanName
+	 * @return
+	 * @throws BeansException
+	 */
 	public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
 			throws BeansException {
 
@@ -173,6 +201,11 @@ public class DefaultBeanFactory  extends AbstractBeanFactory
 		}
 		return result;
 	}
+
+	/**
+	 * 根据Bean的生命周期，在这里把BeanFactory注入
+	 * @param bean
+	 */
 	private void invokeAwareMethods(final Object bean) {
 		if (bean instanceof BeanFactoryAware) {
 			((BeanFactoryAware) bean).setBeanFactory(this);
@@ -210,6 +243,7 @@ public class DefaultBeanFactory  extends AbstractBeanFactory
 			}
 		}
 	}
+
     public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
 		BeanDefinition bd = this.getBeanDefinition(name);
 		if(bd == null){

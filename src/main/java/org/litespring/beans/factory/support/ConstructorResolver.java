@@ -43,7 +43,7 @@ public class ConstructorResolver {
 		
 		Constructor<?>[] candidates = beanClass.getConstructors();	
 		
-		
+		// 改写了BeanDefinitionValueResolver，使得支持嵌套的BeanDefinition的创建
 		BeanDefinitionValueResolver valueResolver =
 				new BeanDefinitionValueResolver(this.beanFactory);
 		
@@ -57,7 +57,7 @@ public class ConstructorResolver {
 				continue;
 			}			
 			argsToUse = new Object[parameterTypes.length];
-			
+			// valuesMatchTypes的调用中会使用valueResolver的resolveIfNecessary，里面会对嵌套的BeanDefinition处理
 			boolean result = this.valuesMatchTypes(parameterTypes, 
 					cargs.getArgumentValues(), 
 					argsToUse, 

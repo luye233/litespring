@@ -8,6 +8,7 @@ import org.litespring.beans.factory.config.RuntimeBeanReference;
 import org.litespring.beans.factory.config.TypedStringValue;
 
 public class BeanDefinitionValueResolver {
+	// 这里使用的是AbstractBeanFactory，能让类权限变小，解耦性更好
 	private final AbstractBeanFactory beanFactory;
 	
 	public BeanDefinitionValueResolver(
@@ -26,6 +27,7 @@ public class BeanDefinitionValueResolver {
 			
 		}else if (value instanceof TypedStringValue) {
 			return ((TypedStringValue) value).getValue();
+		// 如果value是个BeanDefinition的话，需要特殊处理，调用resolveInnerBean
 		} else if (value instanceof BeanDefinition) {
 			// Resolve plain BeanDefinition, without contained name: use dummy name.
 			BeanDefinition bd = (BeanDefinition) value;
@@ -40,12 +42,14 @@ public class BeanDefinitionValueResolver {
 			return value;
 		}	
 	}
+
+	// 为解决嵌套BeanDefinition而创建的方法
 	private Object resolveInnerBean(String innerBeanName, BeanDefinition innerBd) {
 	
 		try {
 			
 			Object innerBean = this.beanFactory.createBean(innerBd);
-			
+			// 注意：如果是FactoryBean，要调用getObject()才能拿到真实的Bean
 			if (innerBean instanceof FactoryBean) {
 				try {
 					return ((FactoryBean<?>)innerBean).getObject();
