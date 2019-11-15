@@ -39,6 +39,8 @@ public class JdkAopProxyFactory implements AopProxyFactory, InvocationHandler {
 		return getProxy(ClassUtils.getDefaultClassLoader());
 	}
 
+	// jdk的得到代理对象的方式
+	// 这里的代理对象是全部实现了接口列表proxiedInterfaces的（只是它们的子类）
 	public Object getProxy(ClassLoader classLoader) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating JDK dynamic proxy: target source is " + this.config.getTargetObject());
@@ -48,9 +50,17 @@ public class JdkAopProxyFactory implements AopProxyFactory, InvocationHandler {
 		return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
 	}
 
-	
+	/**
+	 * 代理对象中调用任何方法都会调用这个invoke方法
+	 * @param proxy 代理对象的实例
+	 * @param method 需要调用的方法
+	 * @param args 需要调用方法的形参
+	 * @return
+	 * @throws Throwable
+	 */
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		
+		// 这里肯定不能用proxy的，否则会出现死循环，一直调用这个invoke方法
+		// 这里选择的aopConfig中保存的目标对象
 		Object target = this.config.getTargetObject();
 		
 		Object retVal;
@@ -61,6 +71,7 @@ public class JdkAopProxyFactory implements AopProxyFactory, InvocationHandler {
 
 		// Check whether we have any advice. If we don't, we can fallback on direct
 		// reflective invocation of the target, and avoid creating a MethodInvocation.
+		// 如果没有拦截器要拦截这个method，就直接执行这个method
 		if (chain.isEmpty()) {
 			// We can skip creating a MethodInvocation: just invoke the target directly
 			// Note that the final invoker must be an InvokerInterceptor so we know it does

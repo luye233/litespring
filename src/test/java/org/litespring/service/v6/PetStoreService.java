@@ -5,7 +5,7 @@ import org.litespring.stereotype.Component;
 import org.litespring.util.MessageTracker;
 
 @Component(value="petStore")
-public class PetStoreService implements IPetStoreService {
+public class PetStoreService implements IPetStoreService, IPetStoreService2 {
 	
 	public PetStoreService() {		
 		
@@ -15,7 +15,10 @@ public class PetStoreService implements IPetStoreService {
 		System.out.println("place order");
 		MessageTracker.addMsg("place order");
 	}
-	
+
+	public void run(){
+		System.out.println("run");
+	}
 	
 	
 }
